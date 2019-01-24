@@ -31,14 +31,14 @@ def get_later_files(sql_directory, db_version):
 
 
 # Main method.
-def main(sql_directory, db_username, db_host, db_name, db_password:
+def main(sql_directory, db_username, db_host, db_name, db_password):
 	conn = MySQLdb.connect(host=db_host, user=db_username, passwd=db_password, db=db_name)
 	cursor = conn.cursor()
 
 	cursor.execute('SELECT version FROM versionTable')
 	version = cursor.fetchone()
 
-	(files, latest_version) = get_later_files(sql_directory, Int(version))
+	files, latest_version = get_later_files(sql_directory, Int(version))
 
 	for file in files:
 		cursor.execute('INSERT INTO testTable VALUES("{}")'.format(file))
