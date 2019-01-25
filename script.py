@@ -37,12 +37,18 @@ def main(sql_directory, db_username, db_host, db_name, db_password):
     cursor = conn.cursor()
 
     cursor.execute('SELECT version FROM versionTable')
-    version = cursor.fetchone()
+    row = cursor.fetchone()
 
-    files, latest_version = get_later_files(sql_directory, Int(version))
+    if row is not None:
+        version = row[0]
+    else:
+        print("No database version found in versionTable")
+        sys.exit()
+
+    files, latest_version = get_later_files(sql_directory, int(version))
 
     for file in files:
-        cursor.execute('INSERT INTO testTable VALUES("{}")'.format(file))
+        cursor.execute('INSERT INTO testTable VALUES("{}")'.format(sql_directory + "/" +file))
         cursor.commit()
 
     cursor.execute('UPDATE versionTable SET version={}'.format(latest_version))
@@ -52,11 +58,11 @@ def main(sql_directory, db_username, db_host, db_name, db_password):
 
 
 # Check inputs and call main method
-# if __name__ == "__main__":
-#   if(len(sys.argv) != 6):
-#       print("Incorrect arguments supplied.")
-#       print("Arguments of the form: python script.py directory-with-sql-scripts username-for-the-db db-host db-name db-password")
-#       sys.exit()
+if __name__ == "__main__":
+  if(len(sys.argv) != 6):
+      print("Incorrect arguments supplied.")
+      print("Arguments of the form: python script.py directory-with-sql-scripts username-for-the-db db-host db-name db-password")
+      sys.exit()
 
-#   else:
-        # main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+  else:
+        main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
